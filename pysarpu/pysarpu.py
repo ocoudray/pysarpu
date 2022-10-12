@@ -1,6 +1,7 @@
 """Main module."""
 import numpy as np
 import pickle
+from tqdm.auto import tqdm
 
 class PUClassifier:
     '''
@@ -144,7 +145,7 @@ class PUClassifier:
         self.cmodel.fit(Xc, gamma, w, warm_start)
         self.emodel.fit(Xe, gamma, Y, w, warm_start, balance)
     
-    def fit(self, Xc, Xe, Y, w=1., tol=1e-6, max_iter=1e4, warm_start=False, balance=False):
+    def _fit(self, Xc, Xe, Y, w=1., tol=1e-6, max_iter=1e4, warm_start=False, balance=False):
         if not warm_start:
             self.initialization(Xc, Xe, Y, Y, w)
         it = 0
@@ -164,6 +165,24 @@ class PUClassifier:
             # print(last_ll)
             it += 1
             warm_start = True
+
+    def fit(self, Xc, Xe, Y, w=1., tol=1e-6, max_iter=1e4, warm_start=False, balance=False, n_init=20, iter_init=20):
+        if not warm_start:
+            self.initialization(Xc, Xe, Y, Y, w)
+        optimal_ll = self.loglikelihood(Xc, Xe, Y)
+        optimal_params_c = self.cmodel.params.copy()
+        optimal_params_e = self.emodel.params.copy()
+        for k in tqdm(range(n_init)):
+            self._fit(Xc, Xe, Y, w=w, tol=tol, max_iter=iter_init, warm_start=False, balance=balance)
+            ll = self.loglikelihood(Xc, Xe, Y)
+            if ll > optimal_ll:
+                optimal_ll = ll
+                optimal_params_c = self.cmodel.params.copy()
+                optimal_params_e = self.emodel.params.copy()
+        self.cmodel.params = optimal_params_c.copy()
+        self.emodel.params = optimal_params_e.copy()
+        self._fit(Xc, Xe, Y, w=w, tol=tol, max_iter=max_iter, warm_start=True, balance=balance)
+
     
     def save(self, path):
         with open(path, 'wb') as f:
