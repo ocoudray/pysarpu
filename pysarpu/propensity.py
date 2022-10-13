@@ -114,7 +114,8 @@ class LogisticPropensity(Propensity):
     
     def e(self, Xe):
         # add intercept
-        Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        # Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        Xe = np.concatenate([np.ones(Xe.shape[:-1]+(1,)), Xe], axis=-1)
         if self.params is None:
             print('Please initialise parameters first')
             return
@@ -124,7 +125,8 @@ class LogisticPropensity(Propensity):
 
     def loge(self, Xe):
         # add intercept
-        Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        # Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        Xe = np.concatenate([np.ones(Xe.shape[:-1]+(1,)), Xe], axis=-1)
         if self.params is None:
             print('Please initialise parameters first')
             return
@@ -132,8 +134,9 @@ class LogisticPropensity(Propensity):
         return scs.logistic.logcdf(pred)
 
     def log1e(self, Xe):
-        # add intercept
-        Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        # # add intercept
+        # Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        Xe = np.concatenate([np.ones(Xe.shape[:-1]+(1,)), Xe], axis=-1)
         if self.params is None:
             print('Please initialise parameters first')
             return
@@ -154,7 +157,8 @@ class LogisticPropensity(Propensity):
         else:
             weights = 1
         # add intercept
-        Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        # Xe = np.concatenate([np.ones((Xe.shape[0],1)), Xe], axis=1)
+        Xe = np.concatenate([np.ones(Xe.shape[:-1]+(1,)), Xe], axis=-1)
         self.model = sm.GLM(Y, Xe, freq_weights=weights*gamma, family=sm.families.Binomial())
         self.res = self.model.fit(start_params=start_params, disp=0)
         self.params = self.res.params.copy()

@@ -33,7 +33,7 @@ class LinearLogisticRegression(Classifier):
 
     def __str__(self):
         if self.params is not None:
-            s = 'theta_1 = {}'.format(self.params)
+            s = 'theta = {}'.format(self.params)
             return s
         else:
             return ''
@@ -46,7 +46,8 @@ class LinearLogisticRegression(Classifier):
 
     def fit(self, Xc, gamma, w=1., warm_start=True):
         # add intercept
-        Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
         if self.params is None:
             self.initialization(Xc, gamma, w)
         if warm_start == False:
@@ -75,7 +76,8 @@ class LinearLogisticRegression(Classifier):
 
     def eta(self, Xc):
         # add intercept
-        Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
         if self.params is None:
             print('Please initialize parameters first')
             return
@@ -83,7 +85,8 @@ class LinearLogisticRegression(Classifier):
 
     def logeta(self, Xc):
         # add intercept
-        Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
+        Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
         if self.params is None:
             print('Please initialize parameters first')
             return
