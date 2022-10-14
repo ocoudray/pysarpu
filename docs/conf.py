@@ -28,10 +28,16 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['numpy', 'scipy', 'sklearn', 'matplotlib', 'tqdm.auto', 'tqdm']
+MOCK_MODULES = ['numpy', 'scipy', 'scipy.stats', 'sklearn', 'matplotlib', 'tqdm.auto', 'tqdm', 'statsmodels.api', 'statsmodels.base.model']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 import pysarpu
+import pysarpu.classification
+import pysarpu.propensity
+print(sys.path)
+# from pysarpu import *
+# from pysarpu.classification import LinearDiscriminantClassifier
+# import pysarpu.propensity
 
 # -- General configuration ---------------------------------------------
 
@@ -41,7 +47,7 @@ import pysarpu
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosummary']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,7 +80,7 @@ release = pysarpu.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
