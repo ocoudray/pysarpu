@@ -50,7 +50,7 @@ class LogProbitPropensity(Propensity):
     def __repr__(self):
         return self.__str__()
 
-    def initialization(self, Xe, gamma, Y, w=1.):
+    def initialization(self, Xe, w=1.):
         self.params = np.random.rand(Xe.shape[1] + 1)
     
     def e(self, Xe):
@@ -109,7 +109,7 @@ class LogisticPropensity(Propensity):
     def __repr__(self):
         return self.__str__()
 
-    def initialization(self, Xe, gamma, Y, w=1.):
+    def initialization(self, Xe, w=1.):
         self.params = np.random.randn(Xe.shape[1]+1)
     
     def e(self, Xe):
@@ -179,7 +179,7 @@ class GumbelPropensity(Propensity):
     def __repr__(self):
         return self.__str__()
 
-    def initialization(self, Xe, gamma, Y, w=1.):
+    def initialization(self, Xe, w=1.):
         self.params = np.random.rand(Xe.shape[1] + 1)   
 
     def e(self, Xe):

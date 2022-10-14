@@ -41,7 +41,7 @@ class LinearLogisticRegression(Classifier):
     def __repr__(self):
         return self.__str__()
 
-    def initialization(self, Xc, gamma, w=1.):
+    def initialization(self, Xc, w=1.):
         self.params = np.random.randn(Xc.shape[1]+1)
 
     def fit(self, Xc, gamma, w=1., warm_start=True):
@@ -97,7 +97,7 @@ class LinearDiscriminantClassifier(Classifier):
     def __init__(self):
         super(LinearDiscriminantClassifier).__init__()
     
-    def initialization(self, Xc, gamma, w=1.):
+    def initialization(self, Xc, w=1.):
         self.params = {'pi':np.random.rand(), 'mu_0':np.random.randn(Xc.shape[1]), 'mu_1':np.random.randn(Xc.shape[1]), 'Sigma':1/len(Xc)*np.dot((Xc-Xc.mean(axis=0)).T, Xc-Xc.mean())}
         # self.params = {'pi':np.mean(gamma), 'mu_0':np.mean(Xc[gamma==0,:], axis=0), 'mu_1':np.mean(Xc[gamma==1,:], axis=0), 'Sigma':1/len(Xc)*np.dot((Xc-Xc.mean(axis=0)).T, Xc-Xc.mean())}
 
