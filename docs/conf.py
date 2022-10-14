@@ -28,7 +28,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['numpy', 'scipy', 'scipy.stats', 'sklearn', 'matplotlib', 'tqdm.auto', 'tqdm', 'statsmodels.api', 'statsmodels.base.model']
+MOCK_MODULES = ['numpy', 'scipy', 'scipy.stats', 'sklearn', 'matplotlib', 'tqdm.auto', 'tqdm', 'statsmodels.api', 'statsmodels.base.model', 'statsmodels']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 import pysarpu
