@@ -2,27 +2,20 @@
 Usage
 =====
 
-## import
+Import
+------
+
 To use pysarpu in a project::
 
     import pysarpu
 
-## Content of the package:
+PU learning classification model can be imported as follows::
 
-.. autoclass:: pysarpu.PUClassifier
-    :members:
+    from pysarpu import PU
 
-
-
-.. autoclass:: pysarpu.classification.LinearLogisticRegression
-    :members:
-.. autoclass:: pysarpu.classification.LinearDiscriminantClassifier
-    :members:
-.. autoclass:: pysarpu.propensity.LogisticPropensity
-    :members:
-.. autoclass:: pysarpu.propensity.LogProbitPropensity
-    :members:
-.. autoclass:: pysarpu.propensity.GumbelPropensity
-    :members:
+The definition of a PU model requires the specification of a classification model and of a propensity model. Implementations can be found in sub-modules `pysarpu.classification` and `pysarpu.propensity`::
+    
+    from pysarpu.classification import LinearLogisticRegression, LinearDiscriminantClassifier
+    from pysarpu.propensity import LogisticPropensity, LogProbitPropensity, GumbelPropensity
 
 

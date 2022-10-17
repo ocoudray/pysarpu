@@ -8,7 +8,7 @@ class PUClassifier:
     PU learning classification model under unknown propensity.
     This model works by specifying a model on the classification and on the propensity and estimates parameters using EM algorithm (SAR-EM, Bekker et al.)
 
-    :param cmodel: an instance of class :class:`pysarpu.classification.Classifier` representing the classification model. This package includes two types of classification models: logistic regression (accessible through :class:`pysarpu.classification.LinearLogisticRegression`) and linear discriminant analysis (accessible through :class:`pysarpu.classification.LinearDiscriminantClassifier`)
+    :param cmodel: an instance of class :class: `Classifier <pysarpu.classification.Classifier>` representing the classification model. This package includes two types of classification models: logistic regression (accessible through :class:`pysarpu.classification.LinearLogisticRegression`) and linear discriminant analysis (accessible through :class:`pysarpu.classification.LinearDiscriminantClassifier`)
     :type cmodel: :class:`pysarpu.classification.Classifier`
     :param emodel: an instance of class :class:`pysarpu.propensity.Propensity` representing the propensity model. This package includes multiple pre-implemented propensity models: logistic propensity (:class:`pysarpu.propensity.LogisticPropensity`), log-normal propensity (:class:`pysarpu.propensity.LogProbitPropensity`) and Gumbel propensity (:class:`pysarpu.propensity.GumbelPropensity`)
     :type emodel: :class:`pysarpu.propensity.Propensity`
@@ -31,12 +31,13 @@ class PUClassifier:
         '''
         Initialization of parameters for both classification and propensity models before running EM algorithm. The parameters of each models are initialized following their respective method: see `initialization` methods for `cmodel` and `emodel`.
         
-        :param Xc: covariate matrix for classification. The parameters of `cmodel` will be initialized in agreement with the dimension of the entry data $d_1$.
-        :type Xc: `numpy.array` of shape $(n,d_1)$
-        :param Xe: covariate matrix for propensity. The parameters of `emodel` will be initialized in agreement with the dimension of the entry data $d_2$.
-        :type Xe: `numpy.array` of shape $(n,d_2)$
+
+        :param Xc: covariate matrix for classification. The parameters of `cmodel` will be initialized in agreement with the dimension of the entry data :math:`d_1`.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+        :param Xe: covariate matrix for propensity. The parameters of `emodel` will be initialized in agreement with the dimension of the entry data :math:`d_2`.
+        :type Xe: `numpy.array` of shape :math:`(n,d_2)`
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
-        :type Y: `numpy.array` vector of size $n$.
+        :type Y: `numpy.array` vector of size :math:`n`.
 
         :return: `None`
         '''
@@ -66,10 +67,10 @@ class PUClassifier:
         Propensity function using the current parameters of propensity model `emodel`.
 
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` of shape $(n,d_2)$
+        :type Xe: `numpy.array` of shape :math:`(n,d_2)`
 
         :return: vector of propensity scores.
-        :rtype: `numpy.array` of size $n$
+        :rtype: `numpy.array` of size :math:`n`
         '''
         return self.emodel.e(Xe)
 
@@ -78,10 +79,10 @@ class PUClassifier:
         Logarithm of propensity function using the current parameters of propensity model `emodel`.
 
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` of shape $(n,d_2)$
+        :type Xe: `numpy.array` of shape :math:`(n,d_2)`
 
         :return: vector of log-propensity scores.
-        :rtype: `numpy.array` of size $n$
+        :rtype: `numpy.array` of size :math:`n`
         '''
         return self.emodel.loge(Xe)
     
@@ -104,10 +105,10 @@ class PUClassifier:
         Class probability predictions using the parameters of the classification model.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
 
         :return: posterior class probabilities.
-        :rtype: `numpy.array` vector of size $n$
+        :rtype: `numpy.array` vector of size :math:`n`
         '''
         return self.cmodel.eta(Xc)
 
@@ -116,10 +117,10 @@ class PUClassifier:
         Class log-probability predictions using the parameters of the classification model.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
 
         :return: posterior class log-probabilities.
-        :rtype: `numpy.array` vector of size $n$
+        :rtype: `numpy.array` vector of size :math:`n`
         '''
         return self.cmodel.logeta(Xc)
     
@@ -128,12 +129,12 @@ class PUClassifier:
         Class binary predictions using the parameters of the classification model.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param threshold: decision threshold defining the decision rule.
-        :type threshold: `float`, optional (in $[0,1]$)
+        :type threshold: `float`, optional (in :math:`[0,1]`)
 
         :return: class predictions.
-        :rtype: `numpy.array` binary vector of size $n$
+        :rtype: `numpy.array` binary vector of size :math:`n`
         '''
         return (self.predict_cproba(Xc)>=threshold).astype(int)
 
@@ -151,12 +152,12 @@ class PUClassifier:
         Label probability predictions based on the classification model `cmodel` and the propensity model `emodel`. Note that this is different from method `predict_cproba` which returns class probabilities instead.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
 
         :return: posterior label probabilities.
-        :rtype: `numpy.array` vector of size $n$
+        :rtype: `numpy.array` vector of size :math:`n`
         '''
         return self.predict_cproba(Xc)*self.predict_eproba(Xe)
 
@@ -165,12 +166,12 @@ class PUClassifier:
         Label log-probability predictions based on the classification model `cmodel` and the propensity model `emodel`. Note that this is different from method `predict_clogproba` which returns class log-probabilities instead.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
 
         :return: posterior label log-probabilities.
-        :rtype: `numpy.array` vector of size $n$
+        :rtype: `numpy.array` vector of size :math:`n`
         '''
         return self.predict_clogproba(Xc) + self.predict_elogproba(Xe)
 
@@ -179,14 +180,14 @@ class PUClassifier:
         Label binary predictions based on the classification model `cmodel` and the propensity model `emodel`. Note that this is different from method `predict_c` which returns class predictions instead.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param threshold: decision threshold defining the decision rule.
-        :type threshold: `float`, optional (in $[0,1]$)
+        :type threshold: `float`, optional (in :math:`[0,1]`)
 
         :return: label binary predictions.
-        :rtype: `numpy.array` binary vector of size $n$
+        :rtype: `numpy.array` binary vector of size :math:`n`
         '''
         return (self.predict_proba(Xc, Xe)>=threshold).astype(int)
     
@@ -195,13 +196,13 @@ class PUClassifier:
         Log-likelihood function given the current parameters of classification and propensity models. Note that the funciton returns the mean of individual dlog-likelihoods (instead of the usual sum).
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
-        :type Y: `numpy.array` vector of size $n$.
-        :params w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
-        :type w: either `float` (`1.`, default) or `numpy.array` of size $n$, optional.
+        :type Y: `numpy.array` vector of size :math:`n`.
+        :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
+        :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
 
         :return: log-likelihood.
         :rtype: `float`      
@@ -226,14 +227,14 @@ class PUClassifier:
         Compute the expectation step of EM algorithm, return the probabilities for every instance to be of positive class given the observed labels.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
-        :type Y: `numpy.array` vector of size $n$.
+        :type Y: `numpy.array` vector of size :math:`n`.
 
         :return: posterior probabilities
-        :rtype: `np.array` vector of size $n$
+        :rtype: `np.array` vector of size :math:`n`
         '''
         l1 = self.logeta(Xc) + self.log1e(Xe)
         l2 = self.log1etae(Xc, Xe)
@@ -245,15 +246,15 @@ class PUClassifier:
         Compute the maximisation step of EM algorithm, update the model parameters in both classification and propensity models.
 
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
-        :type Y: `numpy.array` vector of size $n$.
+        :type Y: `numpy.array` vector of size :math:`n`.
         :gamma: posterior probabilities obtained in the expectation step.
-        :type gamma: `numpy.array` of size $n$
-        :params w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
-        :type w: either `float` (`1.`, default) or `numpy.array` of size $n$, optional.
+        :type gamma: `numpy.array` of size :math:`n`
+        :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
+        :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
 
         :return: `None`
         '''
@@ -287,13 +288,13 @@ class PUClassifier:
         Estimation of PU learning model parameters (classifier and propensity) through EM algorithm. Multiple random initialization are considered and trained over a few iterations. Then, only the one achieving the best log-likelihood is considered and trained until convergence.
         
         :param Xc: covariate matrix for classification.
-        :type Xc: `numpy.array` with shape $(n, d_1)$.
+        :type Xc: `numpy.array` with shape :math:`(n, d_1)`.
         :param Xe: covariate matrix for propensity.
-        :type Xe: `numpy.array` with shape $(n, d_2)$.
+        :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
-        :type Y: `numpy.array` vector of size $n$.
-        :params w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
-        :type w: either `float` (`1.`, default) or `numpy.array` of size $n$, optional.
+        :type Y: `numpy.array` vector of size :math:`n`.
+        :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
+        :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
         :param tol: tolerance parameter. Once the increase in the log-likelihood is below `tol`, the algorithm stops (default `1e-6`).
         :type tol: float, optional
         :param max_iter: maximum number of iterations (default: `1e4`)
