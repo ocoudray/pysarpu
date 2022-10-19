@@ -4,7 +4,7 @@ import scipy.stats as scs
 
 class Classifier:
     '''
-    Instance of classifier to be used in a PU classification model
+    General classification model
     '''
     def __init__(self):
         self.params = None
@@ -28,6 +28,12 @@ class Classifier:
         return (self.predict_proba(Xc)>=threshold).astype(int)
 
 class LinearLogisticRegression(Classifier):
+    '''
+    Linear logistic regression model for classification.
+
+    :param params: current parameter vector.
+    :type params: `numpy.array` vector of size :math:`d_1+1`
+    '''
     def __init__(self):
         super(LinearLogisticRegression, self).__init__()
 
@@ -42,9 +48,31 @@ class LinearLogisticRegression(Classifier):
         return self.__str__()
 
     def initialization(self, Xc, w=1.):
+        '''
+        Initialization of the parameters of the model. Initial parameters are chosen randomly and the dimension of parameter vector is the dimension of the covariates + 1 (intercept).
+        
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: `None`
+        '''
         self.params = np.random.randn(Xc.shape[1]+1)
 
     def fit(self, Xc, gamma, w=1., warm_start=True):
+        '''
+        Estimation of the parameters of the model given the covariates and the observed output. Note that the output does not need to be binary classes, it can consist in probability values.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+        :param gamma: posterior probabilities obtained in the expectation step.
+        :type gamma: `numpy.array` of size :math:`n`
+        :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
+        :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
+        :param warm_start: indicates whether current parameters can be used for initialization (`True`) or if they should be re-initialized before estimation (default `False`).
+        :type warm_start: bool, optional
+
+        :return: `None`
+        '''
         # add intercept
         # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
         Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
@@ -75,6 +103,15 @@ class LinearLogisticRegression(Classifier):
         # self.params = self.model.coef_[0]
 
     def eta(self, Xc):
+        '''
+        Class probability predictions given the current parameters.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: class probabilities.
+        :rtype: `numpy.array` vector of size :math:`n`         
+        '''
         # add intercept
         # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
         Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
@@ -84,6 +121,15 @@ class LinearLogisticRegression(Classifier):
         return scs.logistic.cdf(np.dot(Xc, self.params))
 
     def logeta(self, Xc):
+        '''
+        Class log-probability predictions given the current parameters.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: class log-probabilities.
+        :rtype: `numpy.array` vector of size :math:`n`         
+        '''
         # add intercept
         # Xc = np.concatenate([np.ones((Xc.shape[0],1)), Xc], axis=1)
         Xc = np.concatenate([np.ones(Xc.shape[:-1]+(1,)), Xc], axis=-1)
@@ -94,10 +140,26 @@ class LinearLogisticRegression(Classifier):
 
 
 class LinearDiscriminantClassifier(Classifier):
+    '''
+    Linear Discriminant Analysis model for classification.
+    
+    :param params: current parameters: `pi` is the class prior, `mu_0` the mean vector for negative class, `mu_1` the mean vector for positive class, `Sigma` the covariance matrix.
+    :type params: `dict`
+    '''
     def __init__(self):
         super(LinearDiscriminantClassifier).__init__()
     
     def initialization(self, Xc, w=1.):
+        '''
+        Initialization of the parameters of the model:
+
+        - the class prior `pi` is randomly and uniformly drawn in :math:`[0,1]`
+        - the mean vectors `mu_0` and `mu_1` are drawn as standardized gaussian variables
+        - the covariance matrix `Sigma` is initialized as the empirical covariance matrix of the whole data set.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+        '''
         self.params = {'pi':np.random.rand(), 'mu_0':np.random.randn(Xc.shape[1]), 'mu_1':np.random.randn(Xc.shape[1]), 'Sigma':1/len(Xc)*np.dot((Xc-Xc.mean(axis=0)).T, Xc-Xc.mean())}
         # self.params = {'pi':np.mean(gamma), 'mu_0':np.mean(Xc[gamma==0,:], axis=0), 'mu_1':np.mean(Xc[gamma==1,:], axis=0), 'Sigma':1/len(Xc)*np.dot((Xc-Xc.mean(axis=0)).T, Xc-Xc.mean())}
 
@@ -123,6 +185,20 @@ class LinearDiscriminantClassifier(Classifier):
         return self.__str__()
     
     def fit(self, Xc, gamma, w=1., warm_start=True):
+        '''
+        Estimation of the parameters of the model given the covariates and the observed output. Note that the output does not need to be binary classes, it can consist in probability values.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+        :param gamma: posterior probabilities obtained in the expectation step.
+        :type gamma: `numpy.array` of size :math:`n`
+        :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
+        :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
+        :param warm_start: indicates whether current parameters can be used for initialization (`True`) or if they should be re-initialized before estimation (default `False`). Not important here as the maximization is straightforward and does not depend on the initialization.
+        :type warm_start: bool, optional
+
+        :return: `None`
+        '''
         self.params['pi'] = np.mean(gamma)
         self.params['mu_1'] = np.mean(gamma[:,np.newaxis]*w*Xc, axis=0)/np.mean(gamma)
         self.params['mu_0'] = np.mean((1-gamma)[:,np.newaxis]*w*Xc, axis=0)/np.mean(1-gamma)
@@ -130,18 +206,54 @@ class LinearDiscriminantClassifier(Classifier):
         self.params['Sigma'] = 1/len(Xc)*(X0+X1)
     
     def eta(self, Xc):
+        '''
+        Class probability predictions given the current parameters.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: class probabilities.
+        :rtype: `numpy.array` vector of size :math:`n`         
+        '''
         f1 = scs.multivariate_normal.pdf(Xc, mean=self.params['mu_1'], cov=self.params['Sigma'])
         f0 = scs.multivariate_normal.pdf(Xc, mean=self.params['mu_0'], cov=self.params['Sigma'])
         return self.params['pi']*f1/(self.params['pi']*f1 + (1-self.params['pi'])*f0)
     
     def logeta(self, Xc):
+        '''
+        Class log-probability predictions given the current parameters.
+
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: class log-probabilities.
+        :rtype: `numpy.array` vector of size :math:`n`         
+        '''
         p0 = (np.dot((Xc-self.params['mu_0']), np.linalg.inv(self.params['Sigma']))*(Xc-self.params['mu_0'])).sum(axis=1)
         p1 = (np.dot((Xc-self.params['mu_1']), np.linalg.inv(self.params['Sigma']))*(Xc-self.params['mu_1'])).sum(axis=1)
         x = -np.log((1-self.params['pi'])/self.params['pi']) + 0.5 * p0 - 0.5 * p1
         return scs.logistic.logcdf(x)
     
     def pdf_pos(self, Xc):
+        '''
+        Individual likelihood for the positive distribution :math:`\\mathbb{P}(x \\vert Z=1)` and for the current parameters.
+    
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: individual likelihood values.
+        :rtype: `numpy.array` vector of size :math:`n`   
+        '''
         return self.params['pi']*scs.multivariate_normal.pdf(Xc, mean=self.params['mu_1'], cov=self.params['Sigma'])
 
     def pdf_neg(self, Xc):
+        '''
+        Individual likelihood for the positive distribution :math:`\\mathbb{P}(x \\vert Z=0)` and for the current parameters.
+    
+        :param Xc: covariate matrix for classification.
+        :type Xc: `numpy.array` of shape :math:`(n,d_1)`
+
+        :return: individual likelihood values.
+        :rtype: `numpy.array` vector of size :math:`n`   
+        '''
         return (1-self.params['pi'])*scs.multivariate_normal.pdf(Xc, mean=self.params['mu_0'], cov=self.params['Sigma'])

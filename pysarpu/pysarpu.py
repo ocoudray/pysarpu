@@ -251,7 +251,7 @@ class PUClassifier:
         :type Xe: `numpy.array` with shape :math:`(n, d_2)`.
         :param Y: observed labels. Only used in the computation of the initial log-likelihood.
         :type Y: `numpy.array` vector of size :math:`n`.
-        :gamma: posterior probabilities obtained in the expectation step.
+        :param gamma: posterior probabilities obtained in the expectation step.
         :type gamma: `numpy.array` of size :math:`n`
         :param w: individual weights (experimental, not tested). Apply weights to observations in the computation of the likelihood.
         :type w: either `float` (`1.`, default) or `numpy.array` of size :math:`n`, optional.
